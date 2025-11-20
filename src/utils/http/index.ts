@@ -83,6 +83,11 @@ axiosInstance.interceptors.request.use(
 /** 响应拦截器 */
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse<BaseResponse>) => {
+    const newAccessToken = response.headers['x-set-access-token']
+    if (newAccessToken) {
+      const userStore = useUserStore()
+      userStore.setToken(newAccessToken)
+    }
     const { code, msg } = response.data
     if ([ApiStatus.success, ApiStatus.successCreated].includes(code)) return response
     if (code === ApiStatus.unauthorized) handleUnauthorizedError(msg)

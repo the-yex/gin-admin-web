@@ -12,12 +12,6 @@ import { AppRouteRecordRaw } from '@/utils/router'
  */
 export const staticRoutes: AppRouteRecordRaw[] = [
   // 不需要登录就能访问的路由示例
-  // {
-  //   path: '/welcome',
-  //   name: 'WelcomeStatic',
-  //   component: () => import('@views/dashboard/console/index.vue'),
-  //   meta: { title: 'menus.dashboard.title' }
-  // },
   {
     path: '/auth/login',
     name: 'Login',
