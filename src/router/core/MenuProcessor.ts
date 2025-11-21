@@ -9,8 +9,6 @@
 
 import type { AppRouteRecord } from '@/types/router'
 import { useUserStore } from '@/store/modules/user'
-import { useAppMode } from '@/hooks/core/useAppMode'
-import { fetchGetMenuList } from '@/api/system-manage'
 import { asyncRoutes } from '../routes/asyncRoutes'
 import { RoutesAlias } from '../routesAlias'
 
@@ -19,42 +17,26 @@ export class MenuProcessor {
    * 获取菜单数据
    */
   async getMenuList(): Promise<AppRouteRecord[]> {
-    const { isFrontendMode } = useAppMode()
-
     let menuList: AppRouteRecord[]
-    if (isFrontendMode.value) {
-      menuList = await this.processFrontendMenu()
-    } else {
-      menuList = await this.processBackendMenu()
-    }
-
+    menuList = await this.processFrontendMenu()
     // 规范化路径（将相对路径转换为完整路径）
     return this.normalizeMenuPaths(menuList)
   }
 
   /**
-   * 处理前端控制模式的菜单
+   * 处理前端所有的菜单列表
    */
   private async processFrontendMenu(): Promise<AppRouteRecord[]> {
     const userStore = useUserStore()
     const permissions = userStore.info?.permissions
 
     let menuList = [...asyncRoutes]
-
     // 根据角色过滤菜单
     if (permissions && permissions.length > 0) {
       menuList = this.filterMenuByRoles(menuList, permissions)
     }
 
     return this.filterEmptyMenus(menuList)
-  }
-
-  /**
-   * 处理后端控制模式的菜单
-   */
-  private async processBackendMenu(): Promise<AppRouteRecord[]> {
-    const list = await fetchGetMenuList()
-    return this.filterEmptyMenus(list)
   }
 
   /**
@@ -65,7 +47,6 @@ export class MenuProcessor {
       const itemPermissions = item.meta?.permissions
       const permissionCodes = permissions?.map(p => p.code) ?? []
       const hasPermission = !itemPermissions || itemPermissions.some((name) => permissionCodes?.includes(name))
-
       if (hasPermission) {
         const filteredItem = { ...item }
         if (filteredItem.children?.length) {

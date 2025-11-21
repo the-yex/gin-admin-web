@@ -76,6 +76,12 @@ export const useUserStore = defineStore(
     // 计算属性：获取工作台状态
     const getWorktabState = computed(() => worktabStore.$state)
 
+    const getResourceCodes = computed(() => {
+      return info.value.permissions
+        ?.flatMap((p) => p.resources?.map((r) => r.code) ?? [])
+        ?? []
+    })
+
     // -------------------------
     // 内部辅助函数
     // -------------------------
@@ -151,6 +157,12 @@ export const useUserStore = defineStore(
         await router.replace({ name: 'Login' })
       }
     }
+
+    const hasAuth = computed(() => {
+      const codes = getResourceCodes.value
+      return (code: string) => codes.includes(code)
+    })
+
     return {
       // 状态
       language,
@@ -166,7 +178,8 @@ export const useUserStore = defineStore(
       getUserInfo,
       getSettingState,
       getWorktabState,
-
+      hasAuth,
+      getResourceCodes,
       // 操作方法
       setUserInfo,
       setLoginStatus,

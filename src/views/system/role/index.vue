@@ -1,7 +1,8 @@
 <!-- 角色管理页面 -->
 <template>
   <div class="art-full-height">
-    <RoleSearch v-show="showSearchBar" v-model="searchForm" @search="handleSearch" @reset="resetSearchParams">
+    <RoleSearch v-if="hasAuth('role:manage:list')" v-show="showSearchBar" v-model="searchForm" @search="handleSearch"
+      @reset="resetSearchParams">
     </RoleSearch>
 
     <ElCard class="art-table-card" shadow="never" :style="{ 'margin-top': showSearchBar ? '12px' : '0' }">
@@ -9,7 +10,7 @@
         @refresh="refreshData">
         <template #left>
           <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增角色</ElButton>
+            <ElButton @click="showDialog('add')" v-ripple v-if="hasAuth('role:manage:add')">新增角色</ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -38,9 +39,9 @@
   import RoleEditDialog from './modules/role-edit-dialog.vue'
   import RolePermissionDialog from './modules/role-permission-dialog.vue'
   import { ElTag, ElMessageBox } from 'element-plus'
-
+  import { useAuth } from '@/hooks/core/useAuth'
   defineOptions({ name: 'Role' })
-
+  const { hasAuth } = useAuth()
   type RoleItem = Api.SystemManage.RoleItem
   type SearchRoleParam = Api.SystemManage.RoleSearchParams
 
@@ -78,7 +79,7 @@
         page_size: 20
       },
       // 排除 apiParams 中的属性
-      excludeParams: ['daterange'],
+      // excludeParams: ['daterange'],
       columnsFactory: () => [
         {
           prop: 'id',
@@ -148,18 +149,21 @@
                   {
                     key: 'permission',
                     label: '编辑权限',
+                    auth: "role:manage:assign-perm",
                     disabled: row.built_in === true,
                     icon: 'ri:user-3-line'
                   },
                   {
                     key: 'edit',
                     label: '编辑角色',
+                    auth: "role:manage:update",
                     disabled: row.built_in === true,
                     icon: 'ri:edit-2-line'
                   },
                   {
                     key: 'delete',
                     label: '删除角色',
+                    auth: "role:manage:delete",
                     disabled: row.built_in === true,
                     icon: 'ri:delete-bin-4-line',
                     color: '#f56c6c'

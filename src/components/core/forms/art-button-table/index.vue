@@ -1,5 +1,5 @@
 <template>
-  <div :class="[
+  <div v-if="!props.auth || hasAuth(props.auth)" :class="[
     'inline-flex items-center justify-center min-w-8 h-8 px-2.5 mr-2.5 text-sm c-p rounded-md',
     buttonClass,
     disabled ? 'cursor-not-allowed opacity-50' : ''
@@ -11,8 +11,9 @@
 </template>
 
 <script setup lang="ts">
+  import { useAuth } from '@/hooks/core/useAuth'
+  const { hasAuth } = useAuth()
   defineOptions({ name: 'ArtButtonTable' })
-
   interface Props {
     /** 按钮类型 */
     type?: 'add' | 'edit' | 'delete' | 'more' | 'view'
@@ -26,6 +27,7 @@
     buttonBgColor?: string
     /** 按钮禁用状态 */
     disabled?: boolean
+    auth?: string
   }
 
   const props = withDefaults(defineProps<Props>(), { disabled: false })

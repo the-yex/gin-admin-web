@@ -6,14 +6,15 @@
 <template>
   <div class="user-page art-full-height">
     <!-- 搜索栏 -->
-    <UserSearch v-model="searchForm" @search="handleSearch" @reset="resetSearchParams"></UserSearch>
+    <UserSearch v-model="searchForm" v-if="hasAuth('user:manage:list')" @search="handleSearch"
+      @reset="resetSearchParams"></UserSearch>
 
     <ElCard class="art-table-card" shadow="never">
       <!-- 表格头部 -->
       <ArtTableHeader v-model:columns="columnChecks" :loading="loading" @refresh="refreshData">
         <template #left>
           <ElSpace wrap>
-            <ElButton @click="showDialog('add')" v-ripple>新增用户</ElButton>
+            <ElButton v-if="hasAuth('user:manage:add')" @click="showDialog('add')" v-ripple>新增用户</ElButton>
           </ElSpace>
         </template>
       </ArtTableHeader>
@@ -39,9 +40,10 @@
   import UserSearch from './modules/user-search.vue'
   import UserDialog from './modules/user-dialog.vue'
   import { ElTag, ElMessageBox, ElImage } from 'element-plus'
+  import { useAuth } from '@/hooks/core/useAuth'
   import { DialogType } from '@/types'
   defineOptions({ name: 'User' })
-  console.log('load user')
+  const { hasAuth } = useAuth()
   type UserListItem = Api.SystemManage.UserItem
   // 弹窗相关
   const dialogType = ref<DialogType>('add')
@@ -186,6 +188,7 @@
             h('div', [
               h(ArtButtonTable, {
                 type: 'edit',
+                auth: 'user:manage:update',
                 disabled: row.built_in === true,
                 onClick: () => {
                   if (!row.built_in) showDialog('edit', row)
@@ -193,6 +196,7 @@
               }),
               h(ArtButtonTable, {
                 type: 'delete',
+                auth: 'user:manage:delete',
                 disabled: row.built_in === true,
                 onClick: () => handleDelete(row)
               })
