@@ -41,6 +41,7 @@ import { AppRouteRecord } from '@/types/router'
 import { setPageTitle } from '@/utils/router'
 import { resetRouterState } from '@/router/guards/beforeEach'
 import { useMenuStore } from './menu'
+import { loginOut } from "@/api/user"
 
 /**
  * 用户状态管理
@@ -150,7 +151,7 @@ export const useUserStore = defineStore(
     const logOut = async () => {
       try {
         // 可选调用后端登出接口
-        // await api.logout?.()
+        await loginOut()
       } finally {
         resetState()
         resetWorkEnv()

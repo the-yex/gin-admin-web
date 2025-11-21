@@ -6,6 +6,12 @@ export const login = (params: Api.SystemManage.LoginRequest) => {
     return request.post<Api.SystemManage.LoginData>({ url: '/users/login', data: params })
 }
 
+export const logout = () => {
+    return request.post({
+        url: '/users/logout'
+    })
+}
+
 // 退出登录
 export const loginOut = () => {
     return request.post<Api.Common.Response>({
